@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación Histórica - Introducción a la Ingeniería Agroindustrial UNAH</title>
+    <style>
+        :root {
+            --primary-color: #0b2545;
+            --secondary-color: #e2b13c;
+            --background-color: #f4f7f6;
+            --text-color: #134074;
+            --white: #ffffff;
+            --success-color: #2a9d8f;
+            --error-color: #e76f51;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .quiz-container {
+            background-color: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 750px;
+            padding: 30px;
+            box-sizing: border-box;
+            border-top: 8px solid var(--primary-color);
+        }
+
+        .brand-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eaeded;
+        }
+
+        .brand-header img {
+            max-height: 70px;
+            max-width: 45%;
+            object-fit: contain;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 20px;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .login-screen {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .login-screen p {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #475569;
+        }
+
+        .input-name {
+            width: 80%;
+            max-width: 400px;
+            padding: 12px 16px;
+            font-size: 16px;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            outline: none;
+            text-align: center;
+        }
+
+        .input-name:focus {
+            border-color: var(--primary-color);
+        }
+
+        .header-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #eef4f8;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            border: 1px solid #d8e2ec;
+        }
+
+        .question {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .options-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .option-item {
+            background-color: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+        }
+
+        .option-item:hover {
+            background-color: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .option-item.correct {
+            background-color: #d1fae5 !important;
+            border-color: var(--success-color) !important;
+            color: #065f46;
+            font-weight: bold;
+        }
+
+        .option-item.incorrect {
+            background-color: #fee2e2 !important;
+            border-color: var(--error-color) !important;
+            color: #991b1b;
+        }
+
+        .option-item.disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .option-item.disabled.correct {
+            opacity: 1;
+        }
+
+        .feedback-container {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            line-height: 1.5;
+            font-size: 15px;
+        }
+
+        .feedback-container.correct {
+            background-color: #d1fae5;
+            border-left: 5px solid var(--success-color);
+            color: #065f46;
+            display: block;
+        }
+
+        .feedback-container.incorrect {
+            background-color: #fee2e2;
+            border-left: 5px solid var(--error-color);
+            color: #991b1b;
+            display: block;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #134074;
+        }
+
+        .btn:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .results-screen {
+            text-align: center;
+            display: none;
+            padding: 10px 0;
+        }
+
+        .evidence-box {
+            border: 3px dashed var(--primary-color);
+            padding: 25px;
+            border-radius: 8px;
+            background-color: #fafbfc;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .evidence-box h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 18px;
+        }
+
+        .student-name-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e293b;
+            margin: 10px 0;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 5px;
+            display: inline-block;
+            width: 90%;
+        }
+
+        .student-account-display {
+            font-size: 18px;
+            font-weight: bold;
+            color: #475569;
+            margin-bottom: 15px;
+        }
+
+        .final-score {
+            font-size: 54px;
+            font-weight: bold;
+            color: var(--success-color);
+            margin: 15px 0;
+        }
+
+        .timestamp {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 15px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div class="brand-header">
+        <img src="https://tecdanli.unah.edu.hn/dmsdocument/18948-campus-el-paraiso-color-b-png" alt="Logo UNAH">
+        <img src="https://curc.unah.edu.hn/assets/assets/careers/icons/ia.png" alt="Logo Carrera">
+    </div>
+
+    <h1>Evaluación Temática: Historia de la Agroindustria en Honduras</h1>
+    
+    <!-- PANTALLA 1: Registro Obligatorio -->
+    <div id="login-screen" class="login-screen">
+        <p>Por favor, ingrese sus datos completos para iniciar la prueba correspondiente a la Unidad 3. Sus datos se reflejarán en el comprobante inalterable.</p>
+        <input type="text" id="student-name-input" class="input-name" placeholder="Nombre y Apellidos Completos" oninput="validateInput()">
+        <input type="text" id="student-account-input" class="input-name" placeholder="Número de Cuenta Institucional (11 dígitos)" maxlength="11" oninput="validateInput()">
+        <div>
+            <button class="btn" id="start-btn" disabled onclick="startQuiz()">Iniciar Evaluación</button>
+        </div>
+    </div>
+
+    <!-- PANTALLA 2: Juego de Preguntas -->
+    <div id="quiz-game" style="display: none;">
+        <div class="header-status">
+            <span class="progress-box" id="progress-text">Pregunta 1 de 30</span>
+            <span class="score-box" id="score-text">Aciertos: 0</span>
+        </div>
+
+        <div class="question" id="question-text">Cargando cuestionario oficial...</div>
+        
+        <ul class="options-list" id="options-container"></ul>
+
+        <div class="feedback-container" id="feedback-box"></div>
+
+        <div class="nav-buttons">
+            <button class="btn" id="next-btn" disabled onclick="nextQuestion()">Siguiente Pregunta</button>
+        </div>
+    </div>
+
+    <!-- PANTALLA 3: Evidencia Final Personalizada -->
+    <div class="results-screen" id="results-game">
+        <div class="evidence-box">
+            <h3>Comprobante Oficial de Evaluación</h3>
+            <p style="margin: 5px 0; color: #64748b; font-size: 14px;">Módulo: Historia e Hitos de la Agroindustria Hondureña</p>
+            
+            <div class="student-name-display" id="student-name-display">Nombre del Alumno</div>
+            <div class="student-account-display" id="student-account-display">Cuenta: ---------</div>
+            
+            <p style="margin: 10px 0 0 0; font-weight: bold; color: #475569;">Puntaje Obtenido:</p>
+            <div class="final-score" id="final-score-text">0 / 30</div>
+            
+            <p id="performance-message" style="font-weight: 500; padding: 0 10px; line-height: 1.4;"></p>
+            <div class="timestamp" id="timestamp-text">Fecha y hora de finalización</div>
+        </div>
+        <p style="color: #64748b; font-size: 14px; font-weight: bold;">⚠️ Guarde este comprobante mediante una captura de pantalla clara para presentarla como su evidencia formal de aprobación.</p>
+        <button class="btn" style="background-color: #64748b; margin-top: 10px;" onclick="restartQuiz()">Reiniciar Intento</button>
+    </div>
+</div>
+
+<script>
+    const rawQuizData = [
+        {
+            type: "multiple",
+            question: "¿Cómo se caracterizaba el procesamiento tecnológico de las materias primas en Honduras durante el siglo XIX y principios del siglo XX?",
+            options: [
+                "Se concentraba en la refinación automatizada de harinas fortificadas distribuidas en el centro.",
+                "Era prácticamente nulo, limitándose a agricultura de subsistencia y ganadería extensiva local.",
+                "Contaba con una red de muelles refrigerados industriales operados directamente por el Estado.",
+                "Dependía del control estadístico avanzado de procesos con balanzas calibradas en el origen."
+            ],
+            correctText: "Era prácticamente nulo, limitándose a agricultura de subsistencia y ganadería extensiva local.",
+            feedback: "Durante el siglo XIX y los albores del XX, la actividad productiva hondureña presentaba un procesamiento tecnológico casi nulo, basándose en la subsistencia e intercambios locales de granos básicos sin valor agregado."
+        },
+        {
+            type: "multiple",
+            question: "¿Qué acontecimiento histórico marcó el origen de los primeros sistemas agroindustriales a gran escala en la Costa Norte de Honduras?",
+            options: [
+                "La apertura de la frontera sur para exportar algodón crudo directo hacia la Europa central.",
+                "La llegada de compañías transnacionales bananeras al territorio de la Costa Norte nacional.",
+                "El establecimiento legal del Sistema Internacional de Unidades en los ingenios azucareros.",
+                "La diversificación pesquera promovida por la Fundación Hondureña de Investigación Agrícola."
+            ],
+            correctText: "La llegada de compañías transnacionales bananeras al territorio de la Costa Norte nacional.",
+            feedback: "El arribo de empresas transnacionales bananeras como la United Fruit Company y la Standard Fruit Company introdujo los primeros sistemas agroindustriales a gran escala en la región norte del país."
+        },
+        {
+            type: "multiple",
+            question: "¿Qué infraestructuras técnicas e industriales introdujeron las compañías transnacionales bananeras a principios del siglo XX?",
+            options: [
+                "Fábricas de empaques bioplásticos y plantas refinadoras de biocombustibles de última generación.",
+                "Sistemas de transporte ferroviario, muelles modernos y redes de riego a gran escala regional.",
+                "Laboratorios instrumentales de metrología industrial legal y refractómetros digitales calibrados.",
+                "Líneas de extrusión continua para el procesamiento masivo de harinas y panificación comercial."
+            ],
+            correctText: "Sistemas de transporte ferroviario, muelles modernos and redes de riego a gran escala regional.",
+            feedback: "Para viabilizar la exportación masiva del banano, las transnacionales dotaron a la zona de infraestructura clave como el ferrocarril, muelles modernos y sistemas de riego."
+        },
+        {
+            type: "multiple",
+            question: "A pesar de que el banano se exportaba de forma fresca, ¿qué operaciones preliminares y de postcosecha se establecieron en las fincas?",
+            options: [
+                "Métodos no térmicos basados en campos eléctricos pulsados y altas presiones hidrostáticas físicas.",
+                "Primeras plantas de lavado, clasificación, empaque y control de calidad a escala masiva.",
+                "Sistemas de liofilización avanzada y destilación al vacío de extractos oleosos crudos locales.",
+                "Planes estructurados de HACCP validados rigurosamente por la Organización de las Naciones Unidas."
+            ],
+            correctText: "Primeras plantas de lavado, clasificación, empaque y control de calidad a escala masiva.",
+            feedback: "Aunque el rubro correspondía a exportación fresca, se requirió montar plantas destinadas a operaciones postcosecha críticas como lavado, clasificación, selección y empaque masivo."
+        },
+        {
+            type: "multiple",
+            question: "¿Cuál fue el principal impacto socioeconómico y geopolítico del modelo de 'enclave' bananero instalado en el país?",
+            options: [
+                "Permitió retener la totalidad del valor agregado generado dentro de las fronteras nacionales.",
+                "Dejaba la mayor parte de las ganancias fuera del territorio, creando una marcada dependencia.",
+                "Descentralizó el crecimiento económico beneficiando equitativamente a la región del sur del país.",
+                "Eliminó por completo la necesidad de financiamiento crediticio de la banca nacional de fomento."
+            ],
+            correctText: "Dejaba la mayor parte de las ganancias fuera del territorio, creando una marcada dependencia.",
+            feedback: "El modelo de enclave convirtió a la zona norte en polo económico, pero al operar de forma aislada, la mayor parte del capital salía del país, creando una marcada dependencia político-económica."
+        },
+        {
+            type: "multiple",
+            question: "¿Qué ciudades se consolidaron históricamente como los principales polos de desarrollo económico gracias a la actividad bananera?",
+            options: [
+                "Choloteca, San Lorenzo y las comunidades pesqueras fronterizas localizadas en el pacífico nacional.",
+                "San Pedro Sula, La Ceiba y las localidades portuarias e industriales de Tela y Trujillo.",
+                "Santa Rosa de Copán, Gracias y los municipios occidentales dedicados a la manufactura del tabaco.",
+                "Yuscarán, Danlí y los asentamientos rurales pertenecientes al departamento de El Paraíso oriental."
+            ],
+            correctText: "San Pedro Sula, La Ceiba y las localidades portuarias e industriales de Tela y Trujillo.",
+            feedback: "La Costa Norte de Honduras articuló su crecimiento en torno a la actividad transnacional, consolidando a San Pedro Sula, La Ceiba y Tela como los centros de dinamismo industrial y logístico."
+        },
+        {
+            type: "multiple",
+            question: "¿Cuál fue el objetivo del Estado de Honduras al impulsar la etapa de diversificación agrícola entre 1950 y 1980?",
+            options: [
+                "Reducir las unidades valorativas de las ciencias exactas y aplicadas en universidades locales.",
+                "Romper la extrema dependencia económica de un solo producto de exportación en el mercado.",
+                "Prohibir la producción ganadera de tipo extensivo en los departamentos orientales y del sur.",
+                "Sustituir por completo las importaciones de insumos químicos requeridos para metrología legal."
+            ],
+            correctText: "Romper la extrema dependencia económica de un solo producto de exportación en el mercado.",
+            feedback: "A mediados del siglo XX, el Estado reconoció la vulnerabilidad de depender únicamente del banano y activó políticas de diversificación para abrir nuevos frentes económicos agroindustriales."
+        },
+        {
+            type: "multiple",
+            question: "¿Qué institución estatal clave fue fundada a mediados del siglo XX para financiar y promover el desarrollo de nuevos rubros agropecuarios?",
+            options: [
+                "La Fundación Hondureña de Investigación Agrícola orientada al estudio de frutas tropicales.",
+                "El Banco Nacional de Fomento, conocido en la actualidad bajo las siglas oficiales BANADESA.",
+                "El Instituto Interamericano de Cooperación para la Agricultura con sede en la región central.",
+                "La Federación de Asociaciones de Ganaderos y Productores de Granos Básicos del sector sur."
+            ],
+            correctText: "El Banco Nacional de Fomento, conocido en la actualidad bajo las siglas oficiales BANADESA.",
+            feedback: "El Banco Nacional de Fomento (hoy BANADESA) fue la herramienta institucional estratégica del Estado para apalancar financieramente la diversificación y tecnificación del agro."
+        },
+        {
+            type: "multiple",
+            question: "¿Cómo se transformó el rubro del café en las zonas montañosas del país durante el período de diversificación?",
+            options: [
+                "Abandonó los métodos de conservación por calor para adoptar procesos de deshidratación al vacío.",
+                "Pasó de un cultivo artesanal a requerir la instalación de beneficios agroindustriales técnicos.",
+                "Se centralizó exclusivamente en llanuras aluviales de baja altitud de toda la zona atlántica.",
+                "Eliminó el uso de empaques de yute tradicionales sustituyéndolos por polímeros inteligentes."
+            ],
+            correctText: "Pasó de un cultivo artesanal a requerir la instalación de beneficios agroindustriales técnicos.",
+            feedback: "El café experimentó una importante transición técnica, evolucionando desde la pequeña escala artesanal hacia el montaje de beneficios destinados al despulpado, lavado, secado y clasificación."
+        },
+        {
+            type: "multiple",
+            question: "La tecnificación e industrialización del café en el sector rural hondureño generó como impacto social que:",
+            options: [
+                "Provocó la migración masiva y definitiva de la población hacia los enclaves bananeros norteños.",
+                "Se transformó en el principal motor económico y de sustento de miles de familias del campo.",
+                "Impidió el nacimiento de organizaciones, cooperativas y federaciones de pequeños caficultores.",
+                "Concentró la riqueza agrícola exclusivamente en tres grandes corporaciones de origen extranjero."
+            ],
+            correctText: "Se transformó en el principal motor económico y de sustento de miles de familias del campo.",
+            feedback: "La expansión y procesamiento del café democratizó el ingreso agrícola, convirtiéndose en el sostén económico fundamental y generador de empleo directo en las comunidades de montaña."
+        },
+        {
+            type: "multiple",
+            question: "¿Qué infraestructura de procesamiento pesado nació gracias al impulso de la inversión nacional en el sector azucarero?",
+            options: [
+                "Plantas liofilizadoras para la obtención industrial de jugos clarificados sin adición de azúcares.",
+                "Los primeros ingenios azucareros destinados a procesar la caña a gran escala comercial.",
+                "Laboratorios automatizados para la calibración legal de refractómetros portátiles de campo.",
+                "Líneas industriales de extrusión continua orientadas al desarrollo de empaques biodegradables."
+            ],
+            correctText: "Los primeros ingenios azucareros destinados a procesar la caña a gran escala comercial.",
+            feedback: "El sector del azúcar de caña se consolidó como una agroindustria pesada gracias al establecimiento de los primeros ingenios azucareros azuzados por el capital e inversión nacional."
+        },
+        {
+            type: "multiple",
+            question: "¿Qué regiones se caracterizaron históricamente por el desarrollo de plantas procesadoras de carne y lácteos estandarizados?",
+            options: [
+                "Las mesetas boscosas y frías ubicadas en los departamentos occidentales de Intibucá y Lempira.",
+                "Los territorios ganaderos tradicionales de los departamentos de Olancho y Choluteca.",
+                "Las regiones insulares y costeras del norte dedicadas primordialmente a la pesca extractiva.",
+                "Los cinturones industriales urbanos que circundan de forma directa a la capital de la República."
+            ],
+            correctText: "Los territorios ganaderos tradicionales de los departamentos de Olancho y Choluteca.",
+            feedback: "Los departamentos ganaderos por excelencia, como Olancho y Choluteca, albergaron los primeros esfuerzos significativos de estandarización en el procesamiento de lácteos y cárnicos."
+        },
+        {
+            type: "multiple",
+            question: "¿Qué cambios macroeconómicos ocurridos en la década de 1990 obligaron a la agroindustria hondureña a modernizarse drásticamente?",
+            options: [
+                "El retorno definitivo a políticas comerciales cerradas basadas en sustitución de importaciones.",
+                "La apertura comercial, la globalización y la firma de tratados de libre comercio multilaterales.",
+                "La prohibición estatal explícita de exportar camarón de cultivo y tilapia hacia Europa central.",
+                "La eliminación de todas las normativas internacionales vinculadas al Codex Alimentarius global."
+            ],
+            correctText: "La apertura comercial, la globalización y la firma de tratados de libre comercio multilaterales.",
+            feedback: "Con las reformas económicas de los años 90 y la inserción del país en mercados globales (como el CAFTA), la agroindustria nacional se vio forzada a modernizar sus plantas para competir."
+        },
+        {
+            type: "multiple",
+            question: "Para ingresar a mercados globales competitivos a partir de los años 90, ¿qué requisitos debió cumplir la producción nacional?",
+            options: [
+                "Sustituir el Sistema Internacional de Unidades por mediciones inglesas e industriales tradicionales.",
+                "Cumplir de manera estricta con rigurosas normativas internacionales de inocuidad y calidad global.",
+                "Eliminar el procesamiento postcosecha exportando los bienes primarios sin lavado ni selección.",
+                "Reducir los márgenes comerciales disminuyendo el valor agregado tecnológico de los coproductos."
+            ],
+            correctText: "Cumplir de manera estricta con rigurosas normativas internacionales de inocuidad y calidad global.",
+            feedback: "La apertura de los mercados internacionales vino acompañada de estrictas barreras técnicas sanitarias, demandando la implementación obligatoria de normas de inocuidad química y biológica."
+        },
+        {
+            type: "multiple",
+            question: "¿Qué de los siguientes rubros se consolidó bajo la denominación de 'Cultivos No Tradicionales' de exportación de alta tecnología?",
+            options: [
+                "La siembra extensiva y molienda tradicional de maíz blanco, frijol rojo y variedades de trigo limpio.",
+                "La producción tecnificada de melón, sandía, piña y diversas variedades de vegetales orientales.",
+                "La recolección y destilación artesanal de resinas madereras obtenidas en zonas forestales protegidas.",
+                "El cultivo controlado bajo invernadero de hortalizas destinadas única y exclusivamente al consumo interno."
+            ],
+            correctText: "La producción tecnificada de melón, sandía, piña y diversas variedades de vegetales orientales.",
+            feedback: "Honduras diversificó su oferta exportadora de alta gama introduciendo cultivos no tradicionales como el melón, la sandía, la piña y los vegetales orientales con fuerte énfasis en frío y empaque."
+        },
+        {
+            type: "multiple",
+            question: "¿En qué zonas geográficas creció exponencialmente el cultivo e industrialización de la palma africana para la obtención de aceites?",
+            options: [
+                "En las laderas áridas y escarpadas localizadas en la región meridional fronteriza del país.",
+                "En las planicies aluviales del Valle de Sula y las fértiles tierras del Bajo Aguán norteño.",
+                "En los valles elevados de la zona central cercanos geográficamente al departamento de Francisco Morazán.",
+                "En las áreas boscosas nativas e inexploradas pertenecientes a la Mosquitia en Gracias a Dios."
+            ],
+            correctText: "En las planicies aluviales del Valle de Sula y las fértiles tierras del Bajo Aguán norteño.",
+            feedback: "El gran núcleo de la agroindustria de la palma aceitera se concentró en las fértiles tierras del Valle de Sula y el Bajo Aguán, donde se instalaron extractoras y refinerías masivas."
+        },
+        {
+            type: "multiple",
+            question: "Además de mantecas y jabones, ¿qué nuevo producto energético ha comenzado a derivarse del procesamiento de la palma en años recientes?",
+            options: [
+                "Gases de combustión sintéticos empleados para la calibración de calderas de alta presión fabril.",
+                "Biocombustibles avanzados a partir del procesamiento químico del aceite crudo extraído.",
+                "Polímeros plásticos de alta densidad destinados comúnmente al envasado de lácteos fluidos.",
+                "Aditivos químicos sintéticos que se encuentran prohibidos por las normativas del Codex."
+            ],
+            correctText: "Biocombustibles avanzados a partir del procesamiento químico del aceite crudo extraído.",
+            feedback: "Siguiendo las tendencias globales de bioeconomía, la industria de la palma en Honduras expandió sus líneas hacia la obtención de biocombustibles a partir de sus corrientes de aceite."
+        },
+        {
+            type: "multiple",
+            question: "¿Qué sector representa una de las agroindustrias más tecnificadas surgidas en la zona sur de Honduras a finales del siglo XX?",
+            options: [
+                "La molienda y extrusión a gran escala de granos industriales de avena y cebada importados del norte.",
+                "La producción y procesamiento especializado de camarón de cultivo bajo altos estándares de inocuidad.",
+                "El secado térmico y tostado industrial de variedades selectas de café de altura de origen montañoso.",
+                "La fabricación masiva de envases de vidrio termoformados para la distribución de jugos cítricos líquidos."
+            ],
+            correctText: "La producción y procesamiento especializado de camarón de cultivo bajo altos estándares de inocuidad.",
+            feedback: "La región sur del país dio un salto tecnológico masivo con la consolidación de la acuicultura, específicamente el cultivo, empaque y congelación de camarón con altos estándares higiénicos."
+        },
+        {
+            type: "multiple",
+            question: "¿Qué éxito acuícola consolidó la zona norte del país, específicamente en los alrededores del Lago de Yojoa?",
+            options: [
+                "La captura artesanal y salado de especies nativas de escama destinadas exclusivamente al mercado local.",
+                "La producción y procesamiento de filete fresco de tilapia orientado a mercados de exportación.",
+                "El enlatado masivo de sardinas marinas utilizando avanzados métodos químicos artificiales de conservación.",
+                "El cultivo hidropónico de microalgas marinas para la extracción controlada de compuestos bioactivos puros."
+            ],
+            correctText: "La producción y procesamiento de filete fresco de tilapia orientado a mercados de exportación.",
+            feedback: "La cadena acuícola sumó un hito importante en la zona central/norte con el procesamiento y exportación de filete fresco de tilapia hacia mercados exigentes como Estados Unidos."
+        },
+        {
+            type: "multiple",
+            question: "De acuerdo con el análisis histórico y los retos actuales planteados, ¿cuál es el desafío definitivo de los futuros ingenieros agroindustriales en Honduras?",
+            options: [
+                "Incrementar de forma exponencial los volúmenes de exportación de materias primas agrícolas en verde.",
+                "Dar el salto definitivo de exportadores de materia prima a procesadores de productos terminados locales.",
+                "Cerrar los centros de procesamiento lácteo de pequeña escala para retornar a esquemas artesanales tradicionales.",
+                "Eliminar por completo el uso de metrología industrial y el control estadístico de las líneas automatizadas."
+            ],
+            correctText: "Dar el salto definitivo de exportadores de materia prima a procesadores de productos terminados locales.",
+            feedback: "El gran reto histórico de Honduras es retener el valor ganado dentro de sus fronteras. El desafío de los profesionales es procesar localmente recursos como el café o cacao en bienes terminados."
+        },
+        // Bloque de Verdadero o Falso
+        {
+            type: "tf",
+            question: "Verdadero o Falso: Durante el siglo XIX, la economía agrícola de Honduras dependía fundamentalmente del intercambio local de granos básicos y ganadería con un procesamiento tecnológico prácticamente nulo.",
+            options: ["Verdadero", "Falso"],
+            correctText: "Verdadero",
+            feedback: "Correcto. El contexto preindustrial del país se limitaba a actividades ganaderas extensivas y agrícolas de subsistencia sin valor agregado tecnológico."
+        },
+        {
+            type: "tf",
+            question: "Verdadero o Falso: El primer gran despliegue de infraestructura ferroviaria y logística de riego a gran escala en la zona sur fue impulsado por la industria del tabaco.",
+            options: ["Verdadero", "Falso"],
+            correctText: "Falso",
+            feedback: "Correcto. Falso. Estas infraestructuras de transporte y riego masivo ingresaron por la Costa Norte de la mano del enclave transnacional bananero."
+        },
+        {
+            type: "tf",
+            question: "Verdadero o Falso: El Banco Nacional de Fomento (hoy BANADESA) fue una institución clave para apalancar financieramente la diversificación agrícola e industrial a partir de 1950.",
+            options: ["Verdadero", "Falso"],
+            correctText: "Verdadero",
+            feedback: "Correcto. El Estado utilizó este banco para financiar la transición y nacimiento de nuevos rubros agroindustriales estructurados."
+        },
+        {
+            type: "tf",
+            question: "Verdadero o Falso: La introducción de los 'beneficios de café' provocó que este rubro abandonara las zonas montañosas para trasladarse de forma definitiva a los valles planos del norte.",
+            options: ["Verdadero", "Falso"],
+            correctText: "Falso",
+            feedback: "Correcto. Falso. El café se mantuvo en las zonas altas y montañosas, pero los beneficios permitieron industrializar el despulpado, lavado y secado en esas regiones."
+        },
+        {
+            type: "tf",
+            question: "Verdadero o Falso: El cultivo e industrialización de la palma africana en el Valle de Sula y el Bajo Aguán permitió el desarrollo de plantas extractoras de aceite crudo y refinerías.",
+            options: ["Verdadero", "Falso"],
+            correctText: "Verdadero",
+            feedback: "Correcto. La expansión de la palma africana dio origen a un robusto sector fabril destinado a aceites, mantecas, jabones y derivados energéticos."
+        },
+        {
+            type: "tf",
+            question: "Verdadero o Falso: Los ingenios azucareros en Honduras se establecieron de forma exclusiva gracias a inversiones de capital de corporaciones transnacionales bananeras.",
+            options: ["Verdadero", "Falso"],
+            correctText: "Falso",
+            feedback: "Correcto. Falso. El surgimiento de los ingenios azucareros industriales pesados fue azuzado principalmente por grupos de inversión nacional."
+        },
+        {
+            type: "tf",
+            question: "Verdadero o Falso: El procesamiento de rubros no tradicionales de exportación como el melón, la sandía y el camarón cultivado cobró una fuerza significativa hacia finales del siglo XX.",
+            options: ["Verdadero", "Falso"],
+            correctText: "Verdadero",
+            feedback: "Correcto. Con la globalización de los años 90, los productos no tradicionales ganaron mercados mundiales gracias a rigurosas tecnologías de postcosecha y frío."
+        },
+        {
+            type: "tf",
+            question: "Verdadero o Falso: La adopción de normativas de inocuidad alimentaria como las Buenas Prácticas de Manufactura fue una decisión opcional de las plantas que no influyó en las aduanas internacionales.",
+            options: ["Verdadero", "Falso"],
+            correctText: "Falso",
+            feedback: "Correcto. Falso. La implementación de BPM e inocuidad fue una exigencia obligatoria impuesta por los mercados internacionales para autorizar el ingreso de las exportaciones."
+        },
+        {
+            type: "tf",
+            question: "Verdadero o Falso: La producción y exportación de filete de tilapia fresco se consolidó de manera tecnificada en la zona del Lago de Yojoa.",
+            options: ["Verdadero", "Falso"],
+            correctText: "Verdadero",
+            feedback: "Correcto. La cadena acuícola de la tilapia en Yojoa logró estandarizar procesos de fileteado y conservación en frío con destino a mercados internacionales."
+        },
+        {
+            type: "tf",
+            question: "Verdadero o Falso: El principal desafío actual del café hondureño en los mercados mundiales es incrementar la exportación del grano verde en bruto sin tostar ni procesar.",
+            options: ["Verdadero", "Falso"],
+            correctText: "Falso",
+            feedback: "Correcto. Falso. El gran reto es revertir la exportación en verde y aplicar tecnologías para procesar, tostar y envasar localmente, reteniendo el valor ganado dentro del país."
+        }
+    ];
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    let quizData = [];
+    let studentName = "";
+    let studentAccount = "";
+
+    function validateInput() {
+        const nameInput = document.getElementById("student-name-input").value.trim();
+        const accountInput = document.getElementById("student-account-input").value.trim();
+        const isAccountValid = /^\d{11}$/.test(accountInput);
+        document.getElementById("start-btn").disabled = (nameInput.length < 5 || !isAccountValid);
+    }
+
+    function startQuiz() {
+        studentName = document.getElementById("student-name-input").value.trim();
+        studentAccount = document.getElementById("student-account-input").value.trim();
+        
+        document.getElementById("login-screen").style.display = "none";
+        document.getElementById("quiz-game").style.display = "block";
+        
+        quizData = [];
+        let processedData = JSON.parse(JSON.stringify(rawQuizData));
+        
+        // Mezclamos el orden general de las 30 preguntas
+        shuffleArray(processedData);
+
+        processedData.forEach((item) => {
+            let optionsShuffled = [...item.options];
+            
+            // ¡SOLUCIÓN REAL AQUÍ!: Solo mezclamos las opciones si el tipo es múltiple.
+            // Para las de Verdadero o Falso ("tf") dejamos el array fijo ["Verdadero", "Falso"] para que no rompa el indexOf.
+            if (item.type === "multiple") {
+                shuffleArray(optionsShuffled); 
+            }
+            
+            let newCorrectIndex = optionsShuffled.indexOf(item.correctText);
+            
+            quizData.push({
+                question: item.question,
+                options: optionsShuffled,
+                correct: newCorrectIndex,
+                feedback: item.feedback
+            });
+        });
+
+        currentQuestionIndex = 0;
+        score = 0;
+        loadQuestion();
+    }
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    const questionTextElem = document.getElementById("question-text");
+    const optionsContainerElem = document.getElementById("options-container");
+    const feedbackBoxElem = document.getElementById("feedback-box");
+    const nextBtnElem = document.getElementById("next-btn");
+    const progressTextElem = document.getElementById("progress-text");
+    const scoreTextElem = document.getElementById("score-text");
+    const quizGameElem = document.getElementById("quiz-game");
+    const resultsGameElem = document.getElementById("results-game");
+    const finalScoreTextElem = document.getElementById("final-score-text");
+    const performanceMessageElem = document.getElementById("performance-message");
+
+    function loadQuestion() {
+        feedbackBoxElem.style.display = "none";
+        feedbackBoxElem.className = "feedback-container";
+        nextBtnElem.disabled = true;
+        optionsContainerElem.innerHTML = "";
+
+        const currentQuestion = quizData[currentQuestionIndex];
+        
+        progressTextElem.textContent = `Pregunta ${currentQuestionIndex + 1} de ${quizData.length}`;
+        scoreTextElem.textContent = `Aciertos: ${score}`;
+        questionTextElem.textContent = currentQuestion.question;
+
+        currentQuestion.options.forEach((option, index) => {
+            const li = document.createElement("li");
+            li.className = "option-item";
+            li.textContent = option;
+            li.onclick = () => checkAnswer(index);
+            optionsContainerElem.appendChild(li);
+        });
+    }
+
+    function checkAnswer(selectedIndex) {
+        const currentQuestion = quizData[currentQuestionIndex];
+        const optionItems = optionsContainerElem.querySelectorAll(".option-item");
+
+        optionItems.forEach((item, index) => {
+            item.classList.add("disabled");
+            if (index === currentQuestion.correct) {
+                item.classList.add("correct");
+            }
+        });
+
+        if (selectedIndex === currentQuestion.correct) {
+            score++;
+            scoreTextElem.textContent = `Aciertos: ${score}`;
+            feedbackBoxElem.textContent = "¡Correcto! " + currentQuestion.feedback;
+            feedbackBoxElem.className = "feedback-container correct";
+        } else {
+            optionItems[selectedIndex].classList.add("incorrect");
+            feedbackBoxElem.textContent = "Incorrecto. " + currentQuestion.feedback;
+            feedbackBoxElem.className = "feedback-container incorrect";
+        }
+
+        nextBtnElem.disabled = false;
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < quizData.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function sendToGoogleSheets(name, account, finalScore) {
+        const googleFormURL = "https://docs.google.com/forms/d/e/1FAIpQLSdIkAhg1EGymlQWA0LBP2wTHGS9MKcFw43k0jEqnJUiXC6wIg/formResponse";
+        
+        const formData = new FormData();
+        formData.append("entry.642220749", name);
+        formData.append("entry.999049239", account);
+        formData.append("entry.784794394", finalScore);
+
+        fetch(googleFormURL, {
+            method: "POST",
+            mode: "no-cors",
+            body: formData
+        })
+        .then(() => console.log("Datos del alumno transmitidos exitosamente a la nube."))
+        .catch((error) => console.error("Error en la transmisión de red de Google Forms:", error));
+    }
+
+    function showResults() {
+        quizGameElem.style.display = "none";
+        resultsGameElem.style.display = "block";
+        
+        const finalScoreStr = `${score} / ${quizData.length}`;
+        finalScoreTextElem.textContent = finalScoreStr;
+        document.getElementById("student-name-display").textContent = studentName;
+        document.getElementById("student-account-display").textContent = `Cuenta: ${studentAccount}`;
+
+        const now = new Date();
+        document.getElementById("timestamp-text").textContent = `Completado el: ${now.toLocaleDateString()} a las ${now.toLocaleTimeString()}`;
+
+        sendToGoogleSheets(studentName, studentAccount, finalScoreStr);
+
+        let message = "";
+        const percentage = (score / quizData.length) * 100;
+
+        if (percentage === 100) {
+            message = "¡Felicidades! Examen perfecto. Demuestras un entendimiento crítico impecable de la evolución y los hitos agroindustriales del país.";
+        } else if (percentage >= 80) {
+            message = "¡Excelente resultado! Posees un dominio muy sólido sobre las transiciones productivas, enclaves y diversificación de rubros en Honduras.";
+        } else if (percentage >= 60) {
+            message = "Aprobado. Identificas los procesos e instituciones clave de nuestra historia industrial, pero te sugerimos repasar los retos contemporáneos.";
+        } else {
+            message = "Evaluación no aprobada. Es indispensable realizar una lectura analítica de las etapas económicas y la modernización tecnológica nacional.";
+        }
+        performanceMessageElem.textContent = message;
+    }
+
+    function restartQuiz() {
+        resultsGameElem.style.display = "none";
+        document.getElementById("student-name-input").value = "";
+        document.getElementById("student-account-input").value = "";
+        document.getElementById("login-screen").style.display = "block";
+        validateInput();
+    }
+</script>
+
+</body>
+</html>
