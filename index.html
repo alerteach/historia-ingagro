@@ -266,9 +266,8 @@
 
     <h1>Evaluación Temática: Historia de la Agroindustria en Honduras</h1>
     
-    <!-- PANTALLA 1: Registro Obligatorio -->
     <div id="login-screen" class="login-screen">
-        <p>Por favor, ingrese sus datos completos para iniciar la prueba correspondiente a la Unidad. Sus datos se reflejarán en el comprobante inalterable.</p>
+        <p>Por favor, ingrese sus datos completos para iniciar la prueba correspondiente a la Unidad 3. Sus datos se reflejarán en el comprobante inalterable.</p>
         <input type="text" id="student-name-input" class="input-name" placeholder="Nombre y Apellidos Completos" oninput="validateInput()">
         <input type="text" id="student-account-input" class="input-name" placeholder="Número de Cuenta Institucional (11 dígitos)" maxlength="11" oninput="validateInput()">
         <div>
@@ -276,7 +275,6 @@
         </div>
     </div>
 
-    <!-- PANTALLA 2: Juego de Preguntas -->
     <div id="quiz-game" style="display: none;">
         <div class="header-status">
             <span class="progress-box" id="progress-text">Pregunta 1 de 30</span>
@@ -294,7 +292,6 @@
         </div>
     </div>
 
-    <!-- PANTALLA 3: Evidencia Final Personalizada -->
     <div class="results-screen" id="results-game">
         <div class="evidence-box">
             <h3>Comprobante Oficial de Evaluación</h3>
@@ -386,7 +383,7 @@
                 "Yuscarán, Danlí y los asentamientos rurales pertenecientes al departamento de El Paraíso oriental."
             ],
             correctText: "San Pedro Sula, La Ceiba y las localidades portuarias e industriales de Tela y Trujillo.",
-            feedback: "La Costa Norte de Honduras articuló su crecimiento en torno a la actividad transnacional, consolidando a San Pedro Sula, La Ceiba y Tela como los centros de dinamismo industrial y logístico."
+            feedback: "La Costa Norte de Honduras articuló su crecimiento en torno a la actividad transnacional, consolidando a San Pedro Sula, La Ceiba y Tela como los centers de dinamismo industrial y logístico."
         },
         {
             type: "multiple",
@@ -639,6 +636,55 @@
     let quizData = [];
     let studentName = "";
     let studentAccount = "";
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let isQuestionAnswered = false; 
+
+    const questionTextElem = document.getElementById("question-text");
+    const optionsContainerElem = document.getElementById("options-container");
+    const feedbackBoxElem = document.getElementById("feedback-box");
+    const nextBtnElem = document.getElementById("next-btn");
+    const progressTextElem = document.getElementById("progress-text");
+    const scoreTextElem = document.getElementById("score-text");
+    const quizGameElem = document.getElementById("quiz-game");
+    const resultsGameElem = document.getElementById("results-game");
+    const finalScoreTextElem = document.getElementById("final-score-text");
+    const performanceMessageElem = document.getElementById("performance-message");
+
+    window.onload = function() {
+        const savedSession = localStorage.getItem("agroQuiz_session");
+        if (savedSession) {
+            const session = JSON.parse(savedSession);
+            studentName = session.studentName;
+            studentAccount = session.studentAccount;
+            quizData = session.quizData;
+            currentQuestionIndex = session.currentQuestionIndex;
+            score = session.score;
+            isQuestionAnswered = session.isQuestionAnswered;
+
+            document.getElementById("login-screen").style.display = "none";
+            quizGameElem.style.display = "block";
+
+            if (currentQuestionIndex < quizData.length) {
+                restoreQuestionState(session.selectedIndex);
+            } else {
+                showResults(true); 
+            }
+        }
+    };
+
+    function saveProgressToLocalStorage(selectedIndex = null) {
+        const sessionState = {
+            studentName: studentName,
+            studentAccount: studentAccount,
+            quizData: quizData,
+            currentQuestionIndex: currentQuestionIndex,
+            score: score,
+            isQuestionAnswered: isQuestionAnswered,
+            selectedIndex: selectedIndex
+        };
+        localStorage.setItem("agroQuiz_session", JSON.stringify(sessionState));
+    }
 
     function validateInput() {
         const nameInput = document.getElementById("student-name-input").value.trim();
@@ -652,23 +698,18 @@
         studentAccount = document.getElementById("student-account-input").value.trim();
         
         document.getElementById("login-screen").style.display = "none";
-        document.getElementById("quiz-game").style.display = "block";
+        quizGameElem.style.display = "block";
         
         quizData = [];
         let processedData = JSON.parse(JSON.stringify(rawQuizData));
         
-        // Mezclamos el orden general de las 30 preguntas
         shuffleArray(processedData);
 
         processedData.forEach((item) => {
             let optionsShuffled = [...item.options];
-            
-            // ¡SOLUCIÓN REAL AQUÍ!: Solo mezclamos las opciones si el tipo es múltiple.
-            // Para las de Verdadero o Falso ("tf") dejamos el array fijo ["Verdadero", "Falso"] para que no rompa el indexOf.
             if (item.type === "multiple") {
                 shuffleArray(optionsShuffled); 
             }
-            
             let newCorrectIndex = optionsShuffled.indexOf(item.correctText);
             
             quizData.push({
@@ -681,28 +722,18 @@
 
         currentQuestionIndex = 0;
         score = 0;
+        isQuestionAnswered = false;
+        
+        saveProgressToLocalStorage();
         loadQuestion();
     }
-
-    let currentQuestionIndex = 0;
-    let score = 0;
-
-    const questionTextElem = document.getElementById("question-text");
-    const optionsContainerElem = document.getElementById("options-container");
-    const feedbackBoxElem = document.getElementById("feedback-box");
-    const nextBtnElem = document.getElementById("next-btn");
-    const progressTextElem = document.getElementById("progress-text");
-    const scoreTextElem = document.getElementById("score-text");
-    const quizGameElem = document.getElementById("quiz-game");
-    const resultsGameElem = document.getElementById("results-game");
-    const finalScoreTextElem = document.getElementById("final-score-text");
-    const performanceMessageElem = document.getElementById("performance-message");
 
     function loadQuestion() {
         feedbackBoxElem.style.display = "none";
         feedbackBoxElem.className = "feedback-container";
         nextBtnElem.disabled = true;
         optionsContainerElem.innerHTML = "";
+        isQuestionAnswered = false;
 
         const currentQuestion = quizData[currentQuestionIndex];
         
@@ -717,11 +748,56 @@
             li.onclick = () => checkAnswer(index);
             optionsContainerElem.appendChild(li);
         });
+        
+        saveProgressToLocalStorage();
+    }
+
+    // ¡ERROR SOLUCIONADO AQUÍ!: Modificada la rehidratación para reasignar clics si la pregunta no tenía respuesta.
+    function restoreQuestionState(savedSelectedIndex) {
+        const currentQuestion = quizData[currentQuestionIndex];
+        
+        progressTextElem.textContent = `Pregunta ${currentQuestionIndex + 1} de ${quizData.length}`;
+        scoreTextElem.textContent = `Aciertos: ${score}`;
+        questionTextElem.textContent = currentQuestion.question;
+
+        currentQuestion.options.forEach((option, index) => {
+            const li = document.createElement("li");
+            li.className = "option-item";
+            li.textContent = option;
+            
+            // Si NO estaba respondida, le volvemos a dar su evento de clic normal para que pueda avanzar
+            if (!isQuestionAnswered) {
+                li.onclick = () => checkAnswer(index);
+            }
+            optionsContainerElem.appendChild(li);
+        });
+
+        // Si SÍ estaba respondida antes de recargar, bloquea las opciones y pinta los colores correctos/incorrectos
+        if (isQuestionAnswered && savedSelectedIndex !== null) {
+            const optionItems = optionsContainerElem.querySelectorAll(".option-item");
+            optionItems.forEach((item, index) => {
+                item.classList.add("disabled");
+                if (index === currentQuestion.correct) {
+                    item.classList.add("correct");
+                }
+            });
+
+            if (savedSelectedIndex === currentQuestion.correct) {
+                feedbackBoxElem.textContent = "¡Correcto! " + currentQuestion.feedback;
+                feedbackBoxElem.className = "feedback-container correct";
+            } else {
+                optionItems[savedSelectedIndex].classList.add("incorrect");
+                feedbackBoxElem.textContent = "Incorrecto. " + currentQuestion.feedback;
+                feedbackBoxElem.className = "feedback-container incorrect";
+            }
+            nextBtnElem.disabled = false;
+        }
     }
 
     function checkAnswer(selectedIndex) {
         const currentQuestion = quizData[currentQuestionIndex];
         const optionItems = optionsContainerElem.querySelectorAll(".option-item");
+        isQuestionAnswered = true;
 
         optionItems.forEach((item, index) => {
             item.classList.add("disabled");
@@ -742,6 +818,7 @@
         }
 
         nextBtnElem.disabled = false;
+        saveProgressToLocalStorage(selectedIndex); 
     }
 
     function nextQuestion() {
@@ -770,7 +847,7 @@
         .catch((error) => console.error("Error en la transmisión de red de Google Forms:", error));
     }
 
-    function showResults() {
+    function showResults(isRestored = false) {
         quizGameElem.style.display = "none";
         resultsGameElem.style.display = "block";
         
@@ -782,7 +859,10 @@
         const now = new Date();
         document.getElementById("timestamp-text").textContent = `Completado el: ${now.toLocaleDateString()} a las ${now.toLocaleTimeString()}`;
 
-        sendToGoogleSheets(studentName, studentAccount, finalScoreStr);
+        if (!isRestored) {
+            sendToGoogleSheets(studentName, studentAccount, finalScoreStr);
+            saveProgressToLocalStorage();
+        }
 
         let message = "";
         const percentage = (score / quizData.length) * 100;
@@ -800,6 +880,8 @@
     }
 
     function restartQuiz() {
+        localStorage.removeItem("agroQuiz_session");
+        
         resultsGameElem.style.display = "none";
         document.getElementById("student-name-input").value = "";
         document.getElementById("student-account-input").value = "";
